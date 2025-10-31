@@ -1,1 +1,2 @@
 # mlforheartdisease
+The goal is to perform pre-processing, exploratory analysis via K-Nearest Neighbours (KNN) and Naive Bayes classification, followed by dimensionality reduction using Principal Component Analysis (PCA). Followed by Non-Linear Dimensionality Reeduction techniques and the use of additional models, feature selection and voting classifiers to further analysis. This will allow for considering the clinical relevance of the data.

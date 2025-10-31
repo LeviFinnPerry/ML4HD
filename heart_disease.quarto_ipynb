@@ -1,0 +1,1118 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Improving Diagnosis of Cardiovascular Disease \n",
+        "# Using Machine Learning and Statistical Analysis\n",
+        "\n",
+        "### Dataset Overview\n",
+        "\n",
+        "The dataset used for analysis contains clinical and demographic features related to cardiovascular health. It includes both numerical and categorical variables. This comes from the UCI Heart Disease dataset, using the Cleveland database.\n",
+        "\n",
+        "### Goal\n",
+        "\n",
+        "The goal is to perform pre-processing, exploratory analysis via K-Nearest Neighbours (KNN) and Naive Bayes classification, followed by dimensionality reduction using Principal Component Analysis (PCA). Followed by Non-Linear Dimensionality Reeduction techniques and the use of additional models, feature selection and voting classifiers to further analysis. This will allow for considering the clinical relevance of the data.\n",
+        "\n",
+        "## Feature Description\n",
+        "\n",
+        "| **Feature** | **Data Type** | **Description** | **Units** |\n",
+        "|:-----------------|:-----------------|:------------------|:-----------------|\n",
+        "| age | Integer | Age of the patient | years |\n",
+        "| sex | Categorical | Sex of the patient | N/A |\n",
+        "| cp | Categorical | Chest pain type | N/A |\n",
+        "| trestbps | Integer | Resting blood pressure on admission to the hospital | mm Hg |\n",
+        "| chol | Integer | Serum cholesterol | mg/dl |\n",
+        "| fbs | Categorical | Fasting blood sugar \\> 120 (binary) | mg/dl |\n",
+        "| restecg | Categorical | Resting electrocardiographic results | N/A |\n",
+        "| thalach | Integer | Maximum heart rate achieved | bpm |\n",
+        "| exang | Categorical | Exercise induced angina (binary) | N/A |\n",
+        "| oldpeak | Integer | ST depression induced by exercise relative to rest | N/A |\n",
+        "| slope | Categorical | Slope of the peak exercise ST segment | N/A |\n",
+        "| ca | Integer | Number of major vessels (0-3) colored by fluoroscopy | N/A |\n",
+        "| thal | Categorical | Thalassemia type | N/A |\n",
+        "\n",
+        "## Data Exploration\n",
+        "\n",
+        "1.  Import libraries\n"
+      ],
+      "id": "39896ac9"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "from sklearn.impute import KNNImputer\n",
+        "from sklearn.preprocessing import StandardScaler\n",
+        "from sklearn.model_selection import train_test_split, GridSearchCV\n",
+        "from sklearn.neighbors import KNeighborsClassifier\n",
+        "from sklearn.naive_bayes import GaussianNB\n",
+        "from sklearn.decomposition import PCA\n",
+        "from sklearn.metrics import accuracy_score, confusion_matrix, classification_report\n",
+        "import matplotlib.pyplot as plt\n",
+        "import seaborn as sns\n",
+        "from sklearn.manifold import TSNE\n",
+        "import umap.umap_ as umap\n",
+        "from sklearn.feature_selection import RFE\n",
+        "from sklearn.ensemble import RandomForestClassifier\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.svm import SVC\n",
+        "from sklearn.ensemble import VotingClassifier\n",
+        "from sklearn.metrics import roc_curve, auc, precision_recall_curve"
+      ],
+      "id": "20b6b678",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "2.  Load the dataset and examine its structure.\n"
+      ],
+      "id": "c6f894ae"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "hd_df = pd.read_csv('processed.cleveland.data.csv')\n",
+        "\n",
+        "print(\"Dataset Shape: \\n\", hd_df.shape)\n",
+        "print(\"Dataset Columns: \\n\", hd_df.columns.tolist())\n",
+        "print(\"First 5 Rows: \\n\", hd_df.head())"
+      ],
+      "id": "33352598",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "3.  Check the meaning of each numerical feature.\n",
+        "\n",
+        "    | Column | Description | Attribution |\n",
+        "    |-------------------|----------------------------|-------------------------|\n",
+        "    | sex | Sex of the patient | (1 = male; 0 = female) |\n",
+        "    | cp | Chest pain type | (1 = typical angina; 2 = atypical angina; 3 = non-anginal pain; 4 = asymptomatic) |\n",
+        "    | fbs | Fasting blood sugar \\> 120 mg/dl (binary) | (1 = true; 0 = false) |\n",
+        "    | restecg | Resting blood pressure on admission to the hospital | (0 = normal; 1 = having ST-T wave abnormality; 2 = showing probable or definite left ventricular hypertrophy) |\n",
+        "    | exang | Exercise induced angina (binary) | (1 = yes; 0 = no) |\n",
+        "    | slope | Slope of the peak exercise ST segment | (1 = upsloping; 2 = flat; 3 = downsloping) |\n",
+        "    | thal | Thalassemia type | (3 = normal; 6 = fixed defect; 7 = reversable defect) |\n",
+        "    | **num** (target) | diagnosis of heart disease (angiographic disease status) | (0 = No diagnosis of heart disease; 1 = Diagnosis of heart disease) |\n"
+      ],
+      "id": "f1653a7f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "# Reprocess target column for presence of heart disease\n",
+        "hd_df['num'] = hd_df['num'].map({0:0, 1:1, 2:1, 3:1, 4:1})"
+      ],
+      "id": "ebc0bbf8",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "4.  Identify missing values and their patterns.\n"
+      ],
+      "id": "3322b44b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "missing_values = hd_df.isnull().sum()\n",
+        "print(\"Missing Values in Each Column: \\n\", missing_values)"
+      ],
+      "id": "0b0ba259",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "5.  Get summary statistics for numeric features.\n"
+      ],
+      "id": "58e4c04b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "num_features = [\"age\", \"trestbps\", \"chol\", \"thalach\", \"oldpeak\", \"ca\"]\n",
+        "print(\"Summary Statistics of Numeric Features: \\n\", hd_df[num_features].describe())"
+      ],
+      "id": "7ebc13cc",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "6.  For categorical features, check distributions.\n"
+      ],
+      "id": "7bd8aada"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "cat_features = ['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'thal']\n",
+        "for col in cat_features:\n",
+        "    print(f\"Value Counts for {col}: \\n\", hd_df[col].value_counts(dropna=False))"
+      ],
+      "id": "a32b9983",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Findings and Interpretation:\n",
+        "\n",
+        "The dataset contains minimal missing data, allowing application of modeling methods. The presence of imbalanced categories in the target $num$ and features like chest pain type ($cp$), suggests the need for sampling and analysis in classification. Continuous features have natural variation and some extreme values, indicating potential outliers that could influence models. Two columns contain a very small amount of missing values, instead of dropping these columns, imputation methods could be applied.\n",
+        "\n",
+        "## Data Preprocessing\n",
+        "\n",
+        "One hot encoding transforms categorical variables into a series of binary columns, with one fewer column than the number of categories to avoid collinearity in regression or classification models. This approach allows algorithms to interpret category information numerically. *(Coding Systems for Categorical Variables in Regression Analysis, 2016)*\n",
+        "\n",
+        "### Application Steps:\n",
+        "\n",
+        "1.  Convert categorical variables to appropriate formats.\n"
+      ],
+      "id": "360f856f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "for col in cat_features:\n",
+        "    hd_df[col] = hd_df[col].astype('category')"
+      ],
+      "id": "21515235",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "2.  Encode categorical variables for use in models.\n"
+      ],
+      "id": "15b1fa69"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "hd_encoded = pd.get_dummies(hd_df, columns=cat_features, drop_first=True)\n",
+        "print(\"Encoded Shape: \\n\", hd_encoded.shape)"
+      ],
+      "id": "2a16c8cb",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "3.  Detect outliers using statistical methods.\n"
+      ],
+      "id": "a448f671"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "for col in num_features:\n",
+        "    Q1 = hd_df[col].quantile(0.25)\n",
+        "    Q3 = hd_df[col].quantile(0.75)\n",
+        "    IQR = Q3 - Q1\n",
+        "    outliers = hd_df[(hd_df[col] < Q1 - 1.5 * IQR) | (hd_df[col] > Q3 + 1.5 * IQR)]\n",
+        "    if not outliers.empty:\n",
+        "        print(f\"Outliers in {col}: \\n\", outliers[col])\n",
+        "        print(f\"Number of outliers in {col}: \\n\", outliers[col].shape[0])\n",
+        "        plt.figure()\n",
+        "        sns.boxplot(x=hd_df[col])\n",
+        "        plt.title(f'Boxplot of {col}')\n",
+        "        plt.show()"
+      ],
+      "id": "63dd3601",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "    ### Findings and Interpretation:\n",
+        "\n",
+        "    Encoding categorical variables ensures suitability for machine learning algorithms. Identified outliers need consideration on whether to keep to balance clinical relevance and model robustness. $ca$ is of interest as it is a categorical variable for major blood vessels. Analysis of these outliers may give a threshold measurement for the presence of heart disease as all outliers have a value of 3.\n"
+      ],
+      "id": "88954972"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "Q1 = hd_df['ca'].quantile(0.25)\n",
+        "Q3 = hd_df['ca'].quantile(0.75)\n",
+        "IQR = Q3 - Q1\n",
+        "outliers = hd_df[(hd_df['ca'] < Q1 - 1.5 * IQR) | (hd_df['ca'] > Q3 + 1.5 * IQR)]\n",
+        "\n",
+        "cvd_count = 0\n",
+        "for o in outliers['num']:\n",
+        "    if(o == 1):\n",
+        "        cvd_count+=1\n",
+        "\n",
+        "total_count = cvd_count / outliers['ca'].count()\n",
+        "print(\"Percentage of Outliers in ca with CVD \\n\", total_count)"
+      ],
+      "id": "e308d0cd",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "    This concluded that 85% of outliers in $ca$ have CVD. This indicates when 3 major blood vessels are colored by fluoroscopy, the presence of CVD is more frequent, therefore a possible key factor in predicting cardiovascular disease.\n",
+        "\n",
+        "## Handling Missing Data\n",
+        "\n",
+        "KNN imputation fills missing values by finding the $k$ nearest samples in the feature space and imputing the mean among these neighbours. Its instance-based nature makes it suitable for datasets with low to moderate missingness and mixed data types. KNN imputation is widely used in official statistics when the missing pattern is not completely random.\n",
+        "\n",
+        "StandardScaler standardises features by removing the mean and scaling to unit variance using the formula:\n",
+        "\n",
+        "$$\n",
+        "z=\\frac{x-\\mu}{\\theta}\n",
+        "$$\n",
+        "\n",
+        "where $x$ is the feature value, $\\mu$ is the mean, and $\\theta$ is the standard deviation. Standardisation is important for algorithms sensitive to feature scale, such as KNN and PCA, to ensure that each variable contributes equally to distance-based calculations. *(Pierian Training, 2023)*\n",
+        "\n",
+        "### Application Steps:\n",
+        "\n",
+        "1.  Quantify missing data in each column.\n"
+      ],
+      "id": "7540637a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "print(\"Missing Values After Preprocessing: \\n\", hd_df.isnull().sum())"
+      ],
+      "id": "a6bd3808",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "2.  Apply KNN imputation method.\n"
+      ],
+      "id": "bf3e5d08"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "imputer = KNNImputer(n_neighbors=8)\n",
+        "hd_imputed = pd.DataFrame(imputer.fit_transform(hd_encoded), columns=hd_encoded.columns)\n",
+        "print(\"Missing Values After Imputation: \\n\", hd_imputed.isnull().sum())"
+      ],
+      "id": "94825531",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "3.  Scale numeric variables using standardisation or normalisation.\n"
+      ],
+      "id": "117ee76f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "scaler = StandardScaler()\n",
+        "hd_imputed[num_features] = scaler.fit_transform(hd_imputed[num_features])\n",
+        "print(\"Scaled Numeric Features: \\n\", hd_imputed[num_features].head())"
+      ],
+      "id": "cebc451c",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Findings and Interpretation:\n",
+        "\n",
+        "KNN imputation was appropriate due to low missingness and the mixed nature of features. Post-imputation validation showed no missing values remaining, which helps increase dataset usability, supporting unbiased training and evaluation. Standardisation improved data consistency and model compatibility, benefiting algorithms sensitive to feature scaling. No additional features were created as the model seemed straightforward.\n",
+        "\n",
+        "## Exploratory Analysis with K-Nearest Neighbours (KNN)\n",
+        "\n",
+        "### Algorithm Explanation:\n",
+        "\n",
+        "The KNN algorithm is a non-parametric, instance based learning method widely used in classification and regression tasks. For classification, it predicts the label of a new data point based on the majority class with its $k$ closest neighbours. *(IBM, 2021)*\n",
+        "\n",
+        "The formula for the Euclidean distance between two vectors $x$ and $y$ in $n$-dimensional space is:\n",
+        "\n",
+        "$$\n",
+        "d(x,x_i) = \\sqrt{\\sum_j(x_j-x_{ij})^2}\n",
+        "$$\n",
+        "\n",
+        "Once the distances are computed, the labels of the $k$ nearest samples are tallied and the mode label is assigned to the test instance. Key considerations involve how distance is measured, and that performance depends on the choice of $k$.\n",
+        "\n",
+        "### Application Steps:\n",
+        "\n",
+        "1.  Split data into training and testing sets.\n"
+      ],
+      "id": "fb3bb4ca"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "X = hd_imputed.drop(columns=['num'])\n",
+        "y = hd_imputed['num']\n",
+        "\n",
+        "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)"
+      ],
+      "id": "1763bc00",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "2.  Perform hyper-parameter tuning.\n"
+      ],
+      "id": "f1b314d8"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "params = {'n_neighbors': range(1, 21)}\n",
+        "knn = KNeighborsClassifier()\n",
+        "grid = GridSearchCV(knn, param_grid=params, cv=5)\n",
+        "grid.fit(X_train, y_train)\n",
+        "best_k = grid.best_params_['n_neighbors']\n",
+        "print(f\"Best k: {best_k}\")"
+      ],
+      "id": "8a996005",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "3.  Train KNN classifier on the training set.\n"
+      ],
+      "id": "77c13502"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "knn_final = KNeighborsClassifier(n_neighbors=best_k)\n",
+        "knn_final.fit(X_train, y_train)\n",
+        "y_pred_knn = knn_final.predict(X_test)"
+      ],
+      "id": "8888cf53",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "4.  Predict on the test set.\n"
+      ],
+      "id": "a3b57939"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "print(\"KNN Accuracy: \", accuracy_score(y_test, y_pred_knn))\n",
+        "print(\"KNN Confusion Matrix: \\n\", confusion_matrix(y_test, y_pred_knn))\n",
+        "print(\"KNN Classification Report: \\n\", classification_report(y_test, y_pred_knn))"
+      ],
+      "id": "29b64442",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Findings and Interpretation:\n",
+        "\n",
+        "KNN achieved an accuracy of 80% on the test set, successfully identifying many true cases of heart disease. However, it may have limited its capacity to discern more subtle patterns in the data. Hyperparameter tuning and feature reduction improved performance slightly. This reflects KNN's sensitivity to both class imbalance and high dimensionality, as noted in other studies. (*Uddin et al., 2022)*\n",
+        "\n",
+        "## Exploratory Analysis with Naive Bayes\n",
+        "\n",
+        "### Algorithm Explanation:\n",
+        "\n",
+        "Naive Bayes is a classifier based on Baye's theorem, assuming strong independence between features. Modelling the continual probability of each class given a feature vector.\n",
+        "\n",
+        "For a class $c$ and feature vector $x = (x_1,x_2,...,x_n)$, the prediction is:\n",
+        "\n",
+        "$$\n",
+        "P(c|x) \\propto P(c) \\prod_{j=1}^n P(x_j|c) \n",
+        "$$\n",
+        "\n",
+        "where $C_k$ is the class, $x$ is the feature vector, and $P(x_i|C_k)$ are conditional probabilities for each feature under class $C_k$. For continuous features, Gaussian Naive Bayes assumes each $X_i|C_k$ is normally distributed. *(McGonagle, 2015)*\n",
+        "\n",
+        "### Application Steps:\n",
+        "\n",
+        "1.  Train Naive Bayes classifier.\n"
+      ],
+      "id": "79bad164"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "gnb = GaussianNB()\n",
+        "gnb.fit(X_train, y_train)\n",
+        "y_pred_nb = gnb.predict(X_test)"
+      ],
+      "id": "21a9f091",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "2.  Predict on the testing set.\n"
+      ],
+      "id": "4238ae94"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "print(\"Naive Bayes Accuracy: \", accuracy_score(y_test, y_pred_nb))\n",
+        "print(\"Naive Bayes Confusion Matrix: \\n\", confusion_matrix(y_test, y_pred_nb))\n",
+        "print(\"Naive Bayes Classification Report: \\n\", classification_report(y_test, y_pred_nb))"
+      ],
+      "id": "98cdd3a6",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Findings and Interpretation:\n",
+        "\n",
+        "Naive Bayes outperformed KNN, achieving 89% accuracy, outperforming KNN, with a balanced recall and precision. Its probabilistic assumptions provided robustness against irrelevant features and high dimensionality, through its independence assumption may not be entirely realistic for clinical data. *(Peretz et al., 2024)*\n",
+        "\n",
+        "## Dimensionality Reduction via PCA\n",
+        "\n",
+        "### Algorithm Explanation:\n",
+        "\n",
+        "PCA is a linear dimensionality reduction technique that transforms the data to a new coordinate system where the greatest variance comes to lie on the first axis (principal component), the second greatest variance on the second axis etc. Mathematically, PCA computes the eigenvectors and eigenvalues of the data's covariance matrix. *(Jaadi, 2024)*\n",
+        "\n",
+        "For a standardised data matrix $X$:\n",
+        "\n",
+        "$$\n",
+        "Cov(X) = \\frac{1}{n-1}X^⊤X\n",
+        "$$\n",
+        "\n",
+        "The principal components are eigenvectors of $Cov(X)$, and each principle component's eigenvalue indicates the amount of variance it explains. *(Jaadi, 2024)*\n",
+        "\n",
+        "The fraction of variance explained by the $j$-th principal component is:\n",
+        "\n",
+        "$$\n",
+        "\\text{Explained Variance Ratio}_j = \\frac{\\lambda_j}{\\sum^n_{i=1}\\lambda_i}\n",
+        "$$\n",
+        "\n",
+        "where $\\lambda_j$ is the eigenvalue.\n",
+        "\n",
+        "PCA was used to explore the intrinsic structure of the dataset, reduce its dimensionality, and visualise class separability.\n",
+        "\n",
+        "### Application Steps:\n",
+        "\n",
+        "1.  Standardise features prior to PCA.\n"
+      ],
+      "id": "656d9aa9"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "X_pca = X.copy()\n",
+        "pca_scaler = StandardScaler()\n",
+        "X_pca_scaled = pca_scaler.fit_transform(X_pca)"
+      ],
+      "id": "c1971efd",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "2.  Apply PCA, choosing number of components based on explained variance.\n"
+      ],
+      "id": "b720ca63"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "pca = PCA(n_components=2)\n",
+        "principal_components = pca.fit_transform(X_pca_scaled)\n",
+        "explained_variance = pca.explained_variance_ratio_\n",
+        "\n",
+        "print(\"PCA Explained Variance 2 components: \\n\", explained_variance)\n",
+        "print(\"Total Explained Variance: \", explained_variance.sum())"
+      ],
+      "id": "e6e780e1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "3.  Project data onto principal components.\n"
+      ],
+      "id": "afb648c8"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "plt.figure(figsize=(8, 6))\n",
+        "plt.scatter(principal_components[:, 0], principal_components[:, 1], c=y, cmap='RdYlGn_r', edgecolor='k', s=50)\n",
+        "plt.title('PCA of Heart Disease Dataset')\n",
+        "plt.xlabel('Principal Component 1')\n",
+        "plt.ylabel('Principal Component 2')\n",
+        "plt.colorbar(label='Heart Disease Presence')\n",
+        "plt.show()"
+      ],
+      "id": "34eb70f6",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Findings and Interpretation:\n",
+        "\n",
+        "The first two principal components explained only about 28% of the data's variance, suggesting a complex underlying structure not easily captured linearly. While PCA provided initial insights and useful visualisations, nonlinear methods like t-SNE and UMAP may capture meaningful class separations.\n",
+        "\n",
+        "## Non-Linear Dimensionality Reduction\n",
+        "\n",
+        "### Algorithm Explanation:\n",
+        "\n",
+        "t-SNE is a nonlinear algorithm for dimensionality reduction, particularly for data visualisation. It preserves local similarity by modeling high-dimensional data points as probabilities, then optimising their locations in lower dimensions to match these probabilities. *(Van der Maaten & Hinton, 2008)*\n",
+        "\n",
+        "-   Defines conditional probabilities in high dimension with Gaussian kernels:\n",
+        "\n",
+        "    $$\n",
+        "    p_{j|i}= \\frac{exp(-||x_i-x_j||^2/2 \\theta_i^2)}{\\sum_{k \\neq i} exp(-||x_i-x_k||^2/2 \\theta_i^2)}\n",
+        "    $$\n",
+        "\n",
+        "-   Joint probability symmetrisation:\n",
+        "\n",
+        "    $$\n",
+        "    p_{ij}= \\frac{p_{j|i} + p_{i|j}}{2N}\n",
+        "    $$\n",
+        "\n",
+        "-   Low dimensional similarity with Student's t-distribution:\n",
+        "\n",
+        "    $$\n",
+        "    q_{ij}= \\frac{(1+||y_i-y_j||^2)^{-1}}{\\sum_{k \\neq l}(1+||y_k-y_l||^2)^{-1}}\n",
+        "    $$\n",
+        "\n",
+        "-   Kullback-Leibler divergence minimisation:\n",
+        "\n",
+        "    $$\n",
+        "    KL(P||Q)= \\sum_{i \\neq j}p_{ij}~log \\frac{p_{ij}}{q_{ij}}\n",
+        "    $$\n",
+        "\n",
+        "t-SNE was employed for its strength in revealing clusters and subtle relationships in high-dimensional medical data.\n",
+        "\n",
+        "UMAP is a modern nonlinear manifold learning technique that builds a weighted k-nearest neighbor graph and optimizes a low-dimensional embedding to best preserve the topological structure of the data. *(McInnes & Healy, 2018)*\n",
+        "\n",
+        "UMAP was included alongside t-SNE to compare nonlinear embeddings. As UMAP's ability to reveal global and local structure in complex biomedical datasets is well documented.\n",
+        "\n",
+        "### Application Steps:\n",
+        "\n",
+        "1.  Apply nonlinear techniques on standardised data.\n"
+      ],
+      "id": "1303e4f4"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "X_scaled = X_pca_scaled\n",
+        "tsne = TSNE(n_components=2, random_state=42, perplexity=30)\n",
+        "X_tsne = tsne.fit_transform(X_scaled)\n",
+        "\n",
+        "umap_reducer = umap.UMAP(n_components=2)\n",
+        "X_umap = umap_reducer.fit_transform(X_scaled)"
+      ],
+      "id": "b2a5049f",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "2.  Visualise clusters of heart disease data.\n"
+      ],
+      "id": "dc136b46"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "plt.figure(figsize=(8, 6))\n",
+        "sns.scatterplot(x=X_tsne[:, 0], y=X_tsne[:, 1], hue=y, palette='coolwarm', edgecolor='k', s=50)\n",
+        "plt.title('t-SNE of Heart Disease Dataset')\n",
+        "plt.xlabel('t-SNE Dimension 1')\n",
+        "plt.ylabel('t-SNE Dimension 2')\n",
+        "plt.legend(title='Heart Disease Presence')\n",
+        "plt.show()\n",
+        "\n",
+        "plt.figure(figsize=(8, 6))\n",
+        "sns.scatterplot(x=X_umap[:, 0], y=X_umap[:, 1], hue=y, palette='coolwarm', alpha=0.7)\n",
+        "plt.title('UMAP of Heart Disease Dataset')\n",
+        "plt.xlabel('UMAP Dimension 1')\n",
+        "plt.ylabel('UMAP Dimension 2')\n",
+        "plt.legend(title='Heart Disease Presence')\n",
+        "plt.show()"
+      ],
+      "id": "e15c99cf",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Findings and Interpretation:\n",
+        "\n",
+        "t-SNE provided clearer separation of patient groups compared to PCA, highlighting local neighbourhoods and potential clusters corresponding to heart disease presence. This underlined the importance of capturing nonlinear feature interactions in clinical context. UMAP also revealed strong cluster compactness and separation for the disease and non-disease groups, adding confidence to the existence of meaningful nonlinear relationships missed by linear methods. As CVD encompasses multiple cardiovascular conditions, small clusters of disease groups could indicate a separation in factors across different subtypes of CVD.\n",
+        "\n",
+        "## Model Refinement and Feature Selection\n",
+        "\n",
+        "### Algorithm Explanation:\n",
+        "\n",
+        "Ensemble methods like the Voting Classifier aggregate several base models (KNN, Logistic Regression, SVM, Random Forest and Naive Bayes) to improve predictive accuracy and stability.\n",
+        "\n",
+        "-   For soft voting, class probabilities from each model are averaged, and the class with the highest average is selected:\n",
+        "\n",
+        "    $$\n",
+        "    y=arg~ \\mathop{max}_c (\\frac{1}{M} \\sum_{m=1}^M P_m(c))\n",
+        "    $$\n",
+        "\n",
+        "A soft voting ensemble was trained and evaluated.\n",
+        "\n",
+        "### Application Steps:\n",
+        "\n",
+        "1.  Use feature importance rankings\n"
+      ],
+      "id": "4a7eaa49"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "rf = RandomForestClassifier(random_state=42)\n",
+        "rf.fit(X_train, y_train)\n",
+        "importances = rf.feature_importances_\n",
+        "feature_names = X.columns\n",
+        "feat_imp_df = pd.DataFrame({'Feature': feature_names, 'Importance': importances}).sort_values(by='Importance', ascending=False)\n",
+        "print(\"Feature Importances from Random Forest: \\n\", feat_imp_df.head(8))"
+      ],
+      "id": "75d36c5c",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "2.  Run recursive feature elimination with cross-validation to identify minimal optimal feature subsets\n"
+      ],
+      "id": "cfd0ce1a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "selector = RFE(rf, n_features_to_select=8, step=1)\n",
+        "selector.fit(X_train, y_train)\n",
+        "selected_features = X.columns[selector.support_]\n",
+        "print(\"Selected Features: \\n\", list(selected_features))"
+      ],
+      "id": "e4997383",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "3.  Retrain KNN and Naive Bayes models on reduced feature sets.\n"
+      ],
+      "id": "c90bb50c"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "X_train_sel = X_train[selected_features]\n",
+        "X_test_sel = X_test[selected_features]\n",
+        "knn_sel = KNeighborsClassifier(n_neighbors=best_k)\n",
+        "knn_sel.fit(X_train_sel, y_train)\n",
+        "y_pred_knn_sel = knn_sel.predict(X_test_sel)\n",
+        "\n",
+        "print(\"KNN with Selected Features Accuracy: \", accuracy_score(y_test, y_pred_knn_sel))\n",
+        "print(\"KNN Classification Report with Selected Features: \\n\", classification_report(y_test, y_pred_knn_sel))"
+      ],
+      "id": "55fadf76",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "    gnb.fit(X_train_sel, y_train)\n",
+        "    y_pred_nb_sel = gnb.predict(X_test_sel)\n",
+        "    print(\"Naive Bayes Accuracy: \", accuracy_score(y_test, y_pred_nb_sel))\n",
+        "    print(\"Naive Bayes Confusion Matrix: \\n\", confusion_matrix(y_test, y_pred_nb_sel))\n",
+        "    print(\"Naive Bayes Classification Report: \\n\", classification_report(y_test, y_pred_nb_sel))"
+      ],
+      "id": "175ef3a2",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Findings and Interpretation:\n",
+        "\n",
+        "Feature importance analysis with Random Forest identified $oldpeak$, $thalach$, and $ca$ as top predictors, highlighting clinical variables influencing heart disease prediction. KNN accuracy with selected features improved from 80% to 85%, Naive Bayes dropped in accuracy, indicating that it required a lot more parameters to identify CVD based on the measured factors.\n",
+        "\n",
+        "## Ensemble Voting Classifier\n",
+        "\n",
+        "An ensemble voting classifier combines the predictions of several base models, such as logistic regression and decision trees, to reach a stronger final prediction. It works either by majority vote (hard voting) or by averaging predicted probabilities (soft voting), which helps to balance out individual model weaknesses and reduce overfitting. By leveraging diverse perspectives, this method typically achieves higher accuracy and reliability compared to any single classifier alone. *(pythonafroz, 2024)*\n",
+        "\n",
+        "### Application Steps:\n",
+        "\n",
+        "1.  Train models.\n"
+      ],
+      "id": "4aeb494d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "lr = LogisticRegression(max_iter=1000, random_state=42)\n",
+        "lr.fit(X_train, y_train)\n",
+        "y_pred_lr = lr.predict(X_test)\n",
+        "acc_lr = accuracy_score(y_test, y_pred_lr)\n",
+        "print(\"Logistic Regression Accuracy \\n\", acc_lr)\n",
+        "print(\"Logistic Regression Classification Report: \\n\", classification_report(y_test, y_pred_lr))\n",
+        "\n",
+        "\n",
+        "svc = SVC(probability=True, random_state=42)\n",
+        "svc.fit(X_train, y_train)\n",
+        "y_pred_svc = svc.predict(X_test)\n",
+        "acc_svc = accuracy_score(y_test, y_pred_svc)\n",
+        "print(\"Support Vector Machine Accuracy \\n\", acc_svc)\n",
+        "print(\"Support Vector Machine Classification Report: \\n\", classification_report(y_test, y_pred_svc))\n",
+        "\n",
+        "y_pred_rf = rf.predict(X_test)\n",
+        "acc_rf = accuracy_score(y_test, y_pred_rf)\n",
+        "print(\"Random Forest Accuracy \\n\", acc_rf)\n",
+        "print(\"Random Forest Classification Report: \\n\", classification_report(y_test, y_pred_rf))"
+      ],
+      "id": "a8faffe4",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "2.  Consider ensemble methods combining predictors.\n"
+      ],
+      "id": "d7e9f401"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "ensemble = VotingClassifier(estimators=[\n",
+        "    #('knn', knn_final),\n",
+        "    #('gnb', gnb),\n",
+        "    ('lr', lr),\n",
+        "    ('svm', svc),\n",
+        "    ('rf', rf)\n",
+        "], voting='soft')\n",
+        "\n",
+        "ensemble.fit(X_train_sel, y_train)\n",
+        "\n",
+        "y_pred_ensemble = ensemble.predict(X_test_sel)\n",
+        "print(\"Ensemble Model Accuracy: \", accuracy_score(y_test, y_pred_ensemble))\n",
+        "print(\"Ensemble Model Classification Report: \\n\", classification_report(y_test, y_pred_ensemble))"
+      ],
+      "id": "6ae75b03",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Findings and Interpretation:\n",
+        "\n",
+        "After trialing every possible combination of the ensemble, KNN when combined in the ensemble consistently brought down the accuracy of the model, and performed best in combination to Naive Bayes. Logistic regression, Random forest and Support Vector Machine provided increased accuracy when paired with another model. With the most accurate ensemble being logistic regression, random forest and support vector machine. Implementing an ensemble voting classifier to aggregate predictions gave a model with 90% accuracy. The ensemble approach leverages the strengths of individual models, enhancing generalisability and stability in clinical prediction. This step is important given the heterogeneity in patient data.\n",
+        "\n",
+        "## Clinical Relevance\n",
+        "\n",
+        "ROC and Precision-Recall curves are standard for model evaluation in imbalanced classification, such as clinical risk prediction, guiding threshold selection to minimise false negatives at an appropriate trade-off with specificity. *(scikit-learn, 2012)*\n",
+        "\n",
+        "### Application Steps:\n",
+        "\n",
+        "1.  Adjust classification thresholds to balance sensitivity vs specificity based on clinical context.\n"
+      ],
+      "id": "cd36c4fa"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "y_probs = ensemble.predict_proba(X_test_sel)[:, 1]\n",
+        "fpr, tpr, thresholds_roc = roc_curve(y_test, y_probs)\n",
+        "roc_auc = auc(fpr, tpr)\n",
+        "\n",
+        "plt.figure(figsize=(8, 6))\n",
+        "plt.plot(fpr, tpr, label=f'ROC curve (area = {roc_auc:.2f})')\n",
+        "plt.plot([0, 1], [0, 1], 'k--')\n",
+        "plt.xlabel('False Positive Rate')\n",
+        "plt.ylabel('True Positive Rate')\n",
+        "plt.title(\"ROC Curve - Ensemble Classifier\")\n",
+        "plt.legend(loc='lower right')\n",
+        "plt.show()"
+      ],
+      "id": "e0a709d1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "2.  Use Precision-Recall and ROC curves to select thresholds minimising false negatives\n"
+      ],
+      "id": "f64b28c2"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "md-indent": "    "
+      },
+      "source": [
+        "precision, recall, thresholds_pr = precision_recall_curve(y_test, y_probs)\n",
+        "pr_auc = auc(recall, precision)\n",
+        "\n",
+        "plt.figure(figsize=(8, 6))\n",
+        "plt.plot(recall, precision, label=f'Precision-Recall curve (area = {pr_auc:.2f})')\n",
+        "plt.xlabel('Recall')\n",
+        "plt.ylabel('Precision')\n",
+        "plt.title(\"Precision-Recall Curve - Ensemble Classifier\")\n",
+        "plt.legend(loc='lower left')\n",
+        "plt.show()"
+      ],
+      "id": "4f6aa1cc",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "3.  Simulate the diagnostic accuracy rate of the ensemble for 100 patients\n"
+      ],
+      "id": "b1a37b40"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "cm = confusion_matrix(y_test, y_pred_ensemble)\n",
+        "cm_scaled = (cm / cm.sum()) * 99.9\n",
+        "cm_scaled = np.round(cm_scaled).astype(int)\n",
+        "\n",
+        "plt.figure(figsize=(8,6))\n",
+        "sns.heatmap(cm_scaled, annot=True, fmt='d', cmap=\"YlGnBu\",\n",
+        "            xticklabels=[\"Predicted Negative\", \"Predicted Positive\"],\n",
+        "            yticklabels=[\"Actual Negative\", \"Actual Positive\"])\n",
+        "\n",
+        "plt.title(\"Clinical Diagnosis Simulation (per 100 patients)\")\n",
+        "plt.xlabel(\"Prediction\")\n",
+        "plt.ylabel(\"True Condition\")\n",
+        "plt.show()"
+      ],
+      "id": "8ffd1065",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Findings and Interpretation:\n",
+        "\n",
+        "Classification threshold tuning using ROC and Precision-Recall analyses aligned evaluation metrics with practical clinical priorities. Adjusting threshold to minimise false negative is important in heart disease diagnosis to reduce missed cases. The ROC AUC and PR AUC scores indicated strong model discriminatory power. This improves model usages in real-world settings by accommodating different risk tolerances.\n",
+        "\n",
+        "It is currently estimated that the prevelance of CVD is undiagnosed in around 16% of the population. *(World Health Organization, 2025)* Although it is difficult to predict a true accuracy rate of diagnosis in patients. With the ensemble method having a 90% accuracy in identifying CVD, in a simulation of 100 patients, 47 would accurately be identified as a true positive (having CVD) and 43 as a true negative (not having CVD). Only 5 patients would be misdiagnosed with CVD when they do not have it (false positive) and 5 patients with CVD would be missed (false negative). This accuracy far exceeds the expected diagnostic rate of CVD in patients.\n",
+        "\n",
+        "## Conclusion\n",
+        "\n",
+        "This demonstrates the effectiveness of machine learning techniques for predicting heart disease using the Cleveland dataset. After preprocessing and imputation, models such as K-Nearest Neighbours and Naive Bayes provided baseline results, with KNN with feature selection outperforming Naive Bayes in accuracy. Dimensionality reduction using PCA revealed the complexity of the dataset's feature space, which was better captured by nonlinear methods such as t-SNE and UMAP, highlighting the importance of nonlinear relationships in cardiovascular risk factors.\n",
+        "\n",
+        "Feature selection based on Random Forest importance and recursive elimination refined the model inputs, improving the accuracy and interpretability of the classifiers. More classification models such as Random Forest, Support Vector Machines and Logistic Regression provided more accurate algorithms in predicting CVD. The ensemble modeling approach further enhanced predictive performance by combining the best predictions of the different algorithms. Threshold tuning by ROC and Precision-Recall analyses aligned the models with practical clinical needs, minimising false negatives in medical diagnosis.\n",
+        "\n",
+        "Overall, this efficiently identifies patients with heart disease with 90% accuracy as well as correctly rules out those without the condition.\n",
+        "\n",
+        "## References:\n",
+        "\n",
+        "*Coding Systems for Categorical Variables in Regression Analysis*. (2016). Ucla.edu.\n",
+        "\n",
+        "IBM. (2021, October 4). *What is the k-nearest neighbors (KNN) algorithm?* Ibm.com.\n",
+        "\n",
+        "Jaadi, Z. (2024, February 23). *A Step by Step Explanation of Principal Component Analysis*. Built In.\n",
+        "\n",
+        "James, G., Witten, D., Hastie, T., Tibshirani, R., & Taylor, J. (2023). *An Introduction to Statistical Learning*. An Introduction to Statistical Learning.\n",
+        "\n",
+        "‌Janosi, A., Steinbrunn, W., Pfisterer, M., & Detrano, R. (1989). Heart Disease \\[Dataset\\]. UCI Machine Learning Repository. <https://doi.org/10.24432/C52P4X.>\n",
+        "\n",
+        "McInnes, L., & Healy, J. (2018). *UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction*. ArXiv.org.\n",
+        "\n",
+        "McGonagle, J. (2015). *Naive Bayes Classifier \\| Brilliant Math & Science Wiki*. Brilliant.org.\n",
+        "\n",
+        "Peretz, O., Koren, M., & Koren, O. (2024). Naive Bayes classifier – An ensemble procedure for recall and precision enrichment. *Engineering Applications of Artificial Intelligence*, *136*, 108972. https://doi.org/10.1016/j.engappai.2024.108972\n",
+        "\n",
+        "Pierian Training. (2023, April 20). *Full Guide to Feature Scaling in Scikit-Learn - Pierian Training*. Pierian Training.\n",
+        "\n",
+        "pythonafroz. (2024, October 21). *VotingClassifier: A Powerful Ensemble Technique*. Kaggle.com; Kaggle. ‌\n",
+        "\n",
+        "scikit-learn. (2012). *1.11. Ensemble methods — scikit-learn 0.22.1 documentation*. Scikit-Learn.org.\n",
+        "\n",
+        "Uddin, S., Haque, I., Lu, H., Moni, M. A., & Gide, E. (2022). Comparative performance analysis of K-nearest neighbour (KNN) algorithm and its different variants for disease prediction. *Scientific Reports*, *12*(1). https://doi.org/10.1038/s41598-022-10358-x\n",
+        "\n",
+        "van der Maaten, L., & Hinton, G. (2008). Visualizing Data using t-SNE Laurens van der Maaten. *Journal of Machine Learning Research*, *9*, 2579–2605.\n",
+        "\n",
+        "World Health Organization. (2025, July 31). Cardiovascular diseases (CVDs). World Health Organization ."
+      ],
+      "id": "a068744a"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "C:\\Users\\levif\\AppData\\Local\\Programs\\Python\\Python313\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

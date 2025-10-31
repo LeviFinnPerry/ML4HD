@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>heart_disease</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="heart_disease_files/libs/clipboard/clipboard.min.js"></script>
+<script src="heart_disease_files/libs/quarto-html/quarto.js"></script>
+<script src="heart_disease_files/libs/quarto-html/popper.min.js"></script>
+<script src="heart_disease_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="heart_disease_files/libs/quarto-html/anchor.min.js"></script>
+<link href="heart_disease_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="heart_disease_files/libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="heart_disease_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="heart_disease_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="heart_disease_files/libs/bootstrap/bootstrap-8a79a254b8e706d3c925cde0a310d4f0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Analysis Using Preprocessing, Imputation, KNN, Naive Bayes, and PCA</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="dataset-overview" class="level3">
+<h3 class="anchored" data-anchor-id="dataset-overview">Dataset Overview</h3>
+<p>The dataset used for analysis contains clinical and demographic features related to cardiovascular health. It includes both numerical and categorical variables.</p>
+</section>
+<section id="goal" class="level3">
+<h3 class="anchored" data-anchor-id="goal">Goal</h3>
+<p>The goal is to perform pre-processing, exploratory analysis via K-Nearest Neighbours (KNN) and Naive Bayes classification, followed by dimensionality reduction using Principal Component Analysis (PCA). Followed by Non-Linear Dimensionality Reeduction techniques and the use of additional models and feature selection to further analysis. This will allow for considering the clinical relevance of the data.</p>
+</section>
+<section id="feature-description" class="level2">
+<h2 class="anchored" data-anchor-id="feature-description">Feature Description</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 14%">
+<col style="width: 61%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Feature</strong></th>
+<th style="text-align: left;"><strong>Data Type</strong></th>
+<th style="text-align: left;"><strong>Description</strong></th>
+<th style="text-align: left;"><strong>Units</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: left;">Integer</td>
+<td style="text-align: left;">Age of the patient</td>
+<td style="text-align: left;">years</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sex</td>
+<td style="text-align: left;">Categorical</td>
+<td style="text-align: left;">Sex of the patient</td>
+<td style="text-align: left;">N/A</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cp</td>
+<td style="text-align: left;">Categorical</td>
+<td style="text-align: left;">Chest pain type</td>
+<td style="text-align: left;">N/A</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">trestbps</td>
+<td style="text-align: left;">Integer</td>
+<td style="text-align: left;">Resting blood pressure on admission to the hospital</td>
+<td style="text-align: left;">mm Hg</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">chol</td>
+<td style="text-align: left;">Integer</td>
+<td style="text-align: left;">Serum cholesterol</td>
+<td style="text-align: left;">mg/dl</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fbs</td>
+<td style="text-align: left;">Categorical</td>
+<td style="text-align: left;">Fasting blood sugar &gt; 120 mg/dl (binary)</td>
+<td style="text-align: left;">N/A</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">restecg</td>
+<td style="text-align: left;">Categorical</td>
+<td style="text-align: left;">Resting electrocardiographic results</td>
+<td style="text-align: left;">N/A</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">thalach</td>
+<td style="text-align: left;">Integer</td>
+<td style="text-align: left;">Maximum heart rate achieved</td>
+<td style="text-align: left;">N/A</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">exang</td>
+<td style="text-align: left;">Categorical</td>
+<td style="text-align: left;">Exercise induced angina (binary)</td>
+<td style="text-align: left;">N/A</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">oldpeak</td>
+<td style="text-align: left;">Integer</td>
+<td style="text-align: left;">ST depression induced by exercise relative to rest</td>
+<td style="text-align: left;">N/A</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">slope</td>
+<td style="text-align: left;">Categorical</td>
+<td style="text-align: left;">Slope of the peak exercise ST segment</td>
+<td style="text-align: left;">N/A</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ca</td>
+<td style="text-align: left;">Integer</td>
+<td style="text-align: left;">Number of major vessels (0-3) colored by fluoroscopy</td>
+<td style="text-align: left;">N/A</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">thal</td>
+<td style="text-align: left;">Categorical</td>
+<td style="text-align: left;">Thalassemia type</td>
+<td style="text-align: left;">N/A</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="data-exploration" class="level2">
+<h2 class="anchored" data-anchor-id="data-exploration">Data Exploration</h2>
+<ol type="1">
+<li><p>Import libraries</p>
+<div id="78d79204" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> KNNImputer</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split, GridSearchCV</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> KNeighborsClassifier</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.naive_bayes <span class="im">import</span> GaussianNB</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score, confusion_matrix, classification_report</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.manifold <span class="im">import</span> TSNE</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> umap.umap_ <span class="im">as</span> umap</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_selection <span class="im">import</span> RFE</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.svm <span class="im">import</span> SVC</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> VotingClassifier</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> roc_curve, auc, precision_recall_curve</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p>Load the dataset and examine its structure.</p>
+<div id="802641fd" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>hd_df <span class="op">=</span> pd.read_csv(<span class="st">'processed.cleveland.data.csv'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Dataset Shape: </span><span class="ch">\n</span><span class="st">"</span>, hd_df.shape)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Dataset Columns: </span><span class="ch">\n</span><span class="st">"</span>, hd_df.columns.tolist())</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"First 5 Rows: </span><span class="ch">\n</span><span class="st">"</span>, hd_df.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Dataset Shape: 
+ (303, 14)
+Dataset Columns: 
+ ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal', 'num']
+First 5 Rows: 
+    age  sex  cp  trestbps  chol  fbs  restecg  thalach  exang  oldpeak  slope  \
+0   63    1   1       145   233    1        2      150      0      2.3      3   
+1   67    1   4       160   286    0        2      108      1      1.5      2   
+2   67    1   4       120   229    0        2      129      1      2.6      2   
+3   37    1   3       130   250    0        0      187      0      3.5      3   
+4   41    0   2       130   204    0        2      172      0      1.4      1   
+
+    ca  thal  num  
+0  0.0   6.0    0  
+1  3.0   3.0    2  
+2  2.0   7.0    1  
+3  0.0   3.0    0  
+4  0.0   3.0    0  </code></pre>
+</div>
+</div></li>
+<li><p>Check the meaning of each numerical feature.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 44%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Column</th>
+<th>Description</th>
+<th>Attribution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sex</td>
+<td>Sex of the patient</td>
+<td>(1 = male; 0 = female)</td>
+</tr>
+<tr class="even">
+<td>cp</td>
+<td>Chest pain type</td>
+<td>(1 = typical angina; 2 = atypical angina; 3 = non-anginal pain; 4 = asymptomatic)</td>
+</tr>
+<tr class="odd">
+<td>fbs</td>
+<td>Fasting blood sugar &gt; 120 mg/dl (binary)</td>
+<td>(1 = true; 0 = false)</td>
+</tr>
+<tr class="even">
+<td>restecg</td>
+<td>Resting blood pressure on admission to the hospital</td>
+<td>(0 = normal; 1 = having ST-T wave abnormality; 2 = showing probable or definite left ventricular hypertrophy)</td>
+</tr>
+<tr class="odd">
+<td>exang</td>
+<td>Exercise induced angina (binary)</td>
+<td>(1 = yes; 0 = no)</td>
+</tr>
+<tr class="even">
+<td>slope</td>
+<td>Slope of the peak exercise ST segment</td>
+<td>(1 = upsloping; 2 = flat; 3 = downsloping)</td>
+</tr>
+<tr class="odd">
+<td>thal</td>
+<td>Thalassemia type</td>
+<td>(3 = normal; 6 = fixed defect; 7 = reversable defect)</td>
+</tr>
+<tr class="even">
+<td><strong>num</strong> (target)</td>
+<td>diagnosis of heart disease (angiographic disease status)</td>
+<td>(0 = No diagnosis of heart disease; 1 = Diagnosis of heart disease)</td>
+</tr>
+</tbody>
+</table>
+<div id="a3a22cfa" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reprcess target column for presence of heart disease</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>hd_df[<span class="st">'num'</span>] <span class="op">=</span> hd_df[<span class="st">'num'</span>].<span class="bu">map</span>({<span class="dv">0</span>:<span class="dv">0</span>, <span class="dv">1</span>:<span class="dv">1</span>, <span class="dv">2</span>:<span class="dv">1</span>, <span class="dv">3</span>:<span class="dv">1</span>, <span class="dv">4</span>:<span class="dv">1</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p>Identify missing values and their patterns.</p>
+<div id="e1d73a72" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>missing_values <span class="op">=</span> hd_df.isnull().<span class="bu">sum</span>()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Missing Values in Each Column: </span><span class="ch">\n</span><span class="st">"</span>, missing_values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Missing Values in Each Column: 
+ age         0
+sex         0
+cp          0
+trestbps    0
+chol        0
+fbs         0
+restecg     0
+thalach     0
+exang       0
+oldpeak     0
+slope       0
+ca          4
+thal        2
+num         0
+dtype: int64</code></pre>
+</div>
+</div></li>
+<li><p>Get summary statistics for numeric features.</p>
+<div id="3f95d5e7" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>num_features <span class="op">=</span> [<span class="st">"age"</span>, <span class="st">"trestbps"</span>, <span class="st">"chol"</span>, <span class="st">"thalach"</span>, <span class="st">"oldpeak"</span>, <span class="st">"ca"</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Summary Statistics of Numeric Features: </span><span class="ch">\n</span><span class="st">"</span>, hd_df[num_features].describe())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Summary Statistics of Numeric Features: 
+               age    trestbps        chol     thalach     oldpeak          ca
+count  303.000000  303.000000  303.000000  303.000000  303.000000  299.000000
+mean    54.438944  131.689769  246.693069  149.607261    1.039604    0.672241
+std      9.038662   17.599748   51.776918   22.875003    1.161075    0.937438
+min     29.000000   94.000000  126.000000   71.000000    0.000000    0.000000
+25%     48.000000  120.000000  211.000000  133.500000    0.000000    0.000000
+50%     56.000000  130.000000  241.000000  153.000000    0.800000    0.000000
+75%     61.000000  140.000000  275.000000  166.000000    1.600000    1.000000
+max     77.000000  200.000000  564.000000  202.000000    6.200000    3.000000</code></pre>
+</div>
+</div></li>
+<li><p>For categorical features, check distributions.</p>
+<div id="0ccf0664" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>cat_features <span class="op">=</span> [<span class="st">'sex'</span>, <span class="st">'cp'</span>, <span class="st">'fbs'</span>, <span class="st">'restecg'</span>, <span class="st">'exang'</span>, <span class="st">'slope'</span>, <span class="st">'thal'</span>]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> cat_features:</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Value Counts for </span><span class="sc">{</span>col<span class="sc">}</span><span class="ss">: </span><span class="ch">\n</span><span class="ss">"</span>, hd_df[col].value_counts(dropna<span class="op">=</span><span class="va">False</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Value Counts for sex: 
+ sex
+1    206
+0     97
+Name: count, dtype: int64
+Value Counts for cp: 
+ cp
+4    144
+3     86
+2     50
+1     23
+Name: count, dtype: int64
+Value Counts for fbs: 
+ fbs
+0    258
+1     45
+Name: count, dtype: int64
+Value Counts for restecg: 
+ restecg
+0    151
+2    148
+1      4
+Name: count, dtype: int64
+Value Counts for exang: 
+ exang
+0    204
+1     99
+Name: count, dtype: int64
+Value Counts for slope: 
+ slope
+1    142
+2    140
+3     21
+Name: count, dtype: int64
+Value Counts for thal: 
+ thal
+3.0    166
+7.0    117
+6.0     18
+NaN      2
+Name: count, dtype: int64</code></pre>
+</div>
+</div></li>
+</ol>
+<section id="findings-and-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="findings-and-interpretation">Findings and Interpretation:</h3>
+<p>The dataset contains minimal missing data, allowing application of modeling methods. The presence of imbalanced categories in the target <span class="math inline">\(num\)</span> and features like chest pain type (<span class="math inline">\(cp\)</span>), suggests the need for sampling and analysis in classification. Continuous features have natural variation and some extreme values, indicating potential outliers that could influence models.</p>
+</section>
+</section>
+<section id="data-preprocessing" class="level2">
+<h2 class="anchored" data-anchor-id="data-preprocessing">Data Preprocessing</h2>
+<section id="application-steps" class="level3">
+<h3 class="anchored" data-anchor-id="application-steps">Application Steps:</h3>
+<ol type="1">
+<li><p>Convert categorical variables to appropriate formats.</p>
+<div id="89496966" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> cat_features:</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    hd_df[col] <span class="op">=</span> hd_df[col].astype(<span class="st">'category'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p>Encode categorical variables for use in models.</p>
+<div id="79d572d4" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>hd_encoded <span class="op">=</span> pd.get_dummies(hd_df, columns<span class="op">=</span>cat_features, drop_first<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Encoded Shape: </span><span class="ch">\n</span><span class="st">"</span>, hd_encoded.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Encoded Shape: 
+ (303, 19)</code></pre>
+</div>
+</div></li>
+<li><p>Detect outliers using statistical methods.</p>
+<div id="02e73eb9" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> num_features:</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    Q1 <span class="op">=</span> hd_df[col].quantile(<span class="fl">0.25</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    Q3 <span class="op">=</span> hd_df[col].quantile(<span class="fl">0.75</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    IQR <span class="op">=</span> Q3 <span class="op">-</span> Q1</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    outliers <span class="op">=</span> hd_df[(hd_df[col] <span class="op">&lt;</span> Q1 <span class="op">-</span> <span class="fl">1.5</span> <span class="op">*</span> IQR) <span class="op">|</span> (hd_df[col] <span class="op">&gt;</span> Q3 <span class="op">+</span> <span class="fl">1.5</span> <span class="op">*</span> IQR)]</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> outliers.empty:</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Outliers in </span><span class="sc">{</span>col<span class="sc">}</span><span class="ss">: </span><span class="ch">\n</span><span class="ss">"</span>, outliers[col])</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Number of outliers in </span><span class="sc">{</span>col<span class="sc">}</span><span class="ss">: </span><span class="ch">\n</span><span class="ss">"</span>, outliers[col].shape[<span class="dv">0</span>])</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        plt.figure()</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        sns.boxplot(x<span class="op">=</span>hd_df[col])</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>        plt.title(<span class="ss">f'Boxplot of </span><span class="sc">{</span>col<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Outliers in trestbps: 
+ 14     172
+83     180
+126    200
+172    174
+183    178
+188    192
+201    180
+213    178
+231    180
+Name: trestbps, dtype: int64
+Number of outliers in trestbps: 
+ 9</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="heart_disease_files/figure-html/cell-10-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Outliers in chol: 
+ 48     417
+121    407
+152    564
+173    394
+181    409
+Name: chol, dtype: int64
+Number of outliers in chol: 
+ 5</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="heart_disease_files/figure-html/cell-10-output-4.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Outliers in thalach: 
+ 245    71
+Name: thalach, dtype: int64
+Number of outliers in thalach: 
+ 1</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="heart_disease_files/figure-html/cell-10-output-6.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Outliers in oldpeak: 
+ 91     6.2
+123    5.6
+183    4.2
+191    4.2
+285    4.4
+Name: oldpeak, dtype: float64
+Number of outliers in oldpeak: 
+ 5</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="heart_disease_files/figure-html/cell-10-output-8.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Outliers in ca: 
+ 1      3.0
+40     3.0
+62     3.0
+91     3.0
+92     3.0
+104    3.0
+118    3.0
+121    3.0
+146    3.0
+155    3.0
+161    3.0
+176    3.0
+179    3.0
+187    3.0
+189    3.0
+191    3.0
+193    3.0
+205    3.0
+232    3.0
+285    3.0
+Name: ca, dtype: float64
+Number of outliers in ca: 
+ 20</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="heart_disease_files/figure-html/cell-10-output-10.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<h3 id="findings-and-interpretation-1" class="anchored">Findings and Interpretation:</h3>
+<p>Encoding categorical variables ensures suitability for machine learning algorithms. Identified outliers need consideration on whether to keep to balance clinical relevance and model robustness.</p></li>
+</ol>
+</section>
+</section>
+<section id="handling-missing-data" class="level2">
+<h2 class="anchored" data-anchor-id="handling-missing-data">Handling Missing Data</h2>
+<section id="application-steps-1" class="level3">
+<h3 class="anchored" data-anchor-id="application-steps-1">Application Steps:</h3>
+<ol type="1">
+<li><p>Quantify missing data in each column.</p>
+<div id="e275e67a" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Missing Values After Preprocessing: </span><span class="ch">\n</span><span class="st">"</span>, hd_df.isnull().<span class="bu">sum</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Missing Values After Preprocessing: 
+ age         0
+sex         0
+cp          0
+trestbps    0
+chol        0
+fbs         0
+restecg     0
+thalach     0
+exang       0
+oldpeak     0
+slope       0
+ca          4
+thal        2
+num         0
+dtype: int64</code></pre>
+</div>
+</div></li>
+<li><p>Apply KNN imputation method.</p>
+<div id="ada353b8" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>imputer <span class="op">=</span> KNNImputer(n_neighbors<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>hd_imputed <span class="op">=</span> pd.DataFrame(imputer.fit_transform(hd_encoded), columns<span class="op">=</span>hd_encoded.columns)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Missing Values After Imputation: </span><span class="ch">\n</span><span class="st">"</span>, hd_imputed.isnull().<span class="bu">sum</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Missing Values After Imputation: 
+ age          0
+trestbps     0
+chol         0
+thalach      0
+oldpeak      0
+ca           0
+num          0
+sex_1        0
+cp_2         0
+cp_3         0
+cp_4         0
+fbs_1        0
+restecg_1    0
+restecg_2    0
+exang_1      0
+slope_2      0
+slope_3      0
+thal_6.0     0
+thal_7.0     0
+dtype: int64</code></pre>
+</div>
+</div></li>
+<li><p>Scale numeric variables using standardisation or normalisation.</p>
+<div id="73e6cb99" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>hd_imputed[num_features] <span class="op">=</span> scaler.fit_transform(hd_imputed[num_features])</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Scaled Numeric Features: </span><span class="ch">\n</span><span class="st">"</span>, hd_imputed[num_features].head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Scaled Numeric Features: 
+         age  trestbps      chol   thalach   oldpeak        ca
+0  0.948726  0.757525 -0.264900  0.017197  1.087338 -0.721668
+1  1.392002  1.611220  0.760415 -1.821905  0.397182  2.497157
+2  1.392002 -0.665300 -0.342283 -0.902354  1.346147  1.424215
+3 -1.932564 -0.096170  0.063974  1.637359  2.122573 -0.721668
+4 -1.489288 -0.096170 -0.825922  0.980537  0.310912 -0.721668</code></pre>
+</div>
+</div></li>
+</ol>
+</section>
+<section id="findings-and-interpretation-2" class="level3">
+<h3 class="anchored" data-anchor-id="findings-and-interpretation-2">Findings and Interpretation:</h3>
+<p>KNN imputation was appropriate due to low missingness and the mixed nature of features. Post-imputation validation showed no missing values remaining, which helps increase dataset usability without significant altercation to statistical properties, supporting unbiased training and evaluation. Standardisation improved data consistency and model compatibility, benefiting algorithms sensitive to feature scale. No additional features were created as the model seemed straightforward.</p>
+</section>
+</section>
+<section id="exploratory-analysis-with-k-nearest-neighbours-knn" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-analysis-with-k-nearest-neighbours-knn">Exploratory Analysis with K-Nearest Neighbours (KNN)</h2>
+<section id="algorithm-explanation-and-math" class="level3">
+<h3 class="anchored" data-anchor-id="algorithm-explanation-and-math">Algorithm Explanation and Math:</h3>
+<p>KNN is used for classification and regression. KNN predicts the label of a new data point based on the majority class with its <span class="math inline">\(k\)</span> closest neighbours using a distance metric, Euclidean distance.</p>
+<p>Given a data point <span class="math inline">\(x\)</span>, the algorithm:</p>
+<ul>
+<li><p>Calculates the distance between <span class="math inline">\(x\)</span> and all points in the training dataset:</p>
+<p><span class="math display">\[
+d(x,x_i) = \sqrt{\sum_j(x_j-x_{ij})^2}
+\]</span></p></li>
+<li><p>Identifies the <span class="math inline">\(k\)</span> closest points (smallest distances).</p></li>
+<li><p>Assigns the class by majority vote among those <span class="math inline">\(k\)</span> neighbours.</p></li>
+</ul>
+<p>KNN was used due to its simplicity in handling multi-class and non-linear problems. The model’s only primary hyperparameter is <span class="math inline">\(k\)</span>, the number of neighbors, which was selected via cross-validation.</p>
+</section>
+<section id="application-steps-2" class="level3">
+<h3 class="anchored" data-anchor-id="application-steps-2">Application Steps:</h3>
+<ol type="1">
+<li><p>Split data into training and testing sets.</p>
+<div id="70c15a19" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> hd_imputed.drop(columns<span class="op">=</span>[<span class="st">'num'</span>])</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> hd_imputed[<span class="st">'num'</span>]</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p>Perform hyperparameter tuning.</p>
+<div id="a0e04d9b" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>params <span class="op">=</span> {<span class="st">'n_neighbors'</span>: <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">21</span>)}</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>knn <span class="op">=</span> KNeighborsClassifier()</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>grid <span class="op">=</span> GridSearchCV(knn, param_grid<span class="op">=</span>params, cv<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>grid.fit(X_train, y_train)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>best_k <span class="op">=</span> grid.best_params_[<span class="st">'n_neighbors'</span>]</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Best k: </span><span class="sc">{</span>best_k<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Best k: 8</code></pre>
+</div>
+</div></li>
+<li><p>Train KNN classifier on the training set.</p>
+<div id="47924b9f" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>knn_final <span class="op">=</span> KNeighborsClassifier(n_neighbors<span class="op">=</span>best_k)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>knn_final.fit(X_train, y_train)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>y_pred_knn <span class="op">=</span> knn_final.predict(X_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p>Predict on the test set.</p>
+<div id="4ac409f4" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KNN Accuracy: "</span>, accuracy_score(y_test, y_pred_knn))</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KNN Confusion Matrix: </span><span class="ch">\n</span><span class="st">"</span>, confusion_matrix(y_test, y_pred_knn))</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KNN Classification Report: </span><span class="ch">\n</span><span class="st">"</span>, classification_report(y_test, y_pred_knn))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>KNN Accuracy:  0.8032786885245902
+KNN Confusion Matrix: 
+ [[26  3]
+ [ 9 23]]
+KNN Classification Report: 
+               precision    recall  f1-score   support
+
+         0.0       0.74      0.90      0.81        29
+         1.0       0.88      0.72      0.79        32
+
+    accuracy                           0.80        61
+   macro avg       0.81      0.81      0.80        61
+weighted avg       0.82      0.80      0.80        61
+</code></pre>
+</div>
+</div></li>
+</ol>
+</section>
+<section id="findings-and-interpretation-3" class="level3">
+<h3 class="anchored" data-anchor-id="findings-and-interpretation-3">Findings and Interpretation:</h3>
+<p>KNN achieved an accuracy of approximately 80% on the test set, successfully identifying many true cases of heart disease. However, it showed some sensitivity to outliers and high dimensionality, which may have limited its capacity to discern more subtle patterns in the data. Hyperparameter tuning and feature reduction improved performance slightly.</p>
+</section>
+</section>
+<section id="exploratory-analysis-with-naive-bayes" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-analysis-with-naive-bayes">Exploratory Analysis with Naive Bayes</h2>
+<section id="algorithm-explanation-and-math-1" class="level3">
+<h3 class="anchored" data-anchor-id="algorithm-explanation-and-math-1">Algorithm Explanation and Math:</h3>
+<p>Naive Bayes is a classifier based on Baye’s theorem, assuming strong independence between features. It calculates the posterior probability for each class and assigns the class with the highest probability to the data point.</p>
+<p>For a class <span class="math inline">\(c\)</span> and feature vector <span class="math inline">\(x = (x_1,x_2,...,x_n)\)</span>, the prediction is:</p>
+<p><span class="math display">\[
+P(c|x) \propto P(c) \prod_{j=1}^n P(x_j|c)
+\]</span></p>
+<p>For Gaussian Naive Bayes (continuous data), each feature likelihood is modeled as a normal distribution.</p>
+<p>Naive Bayes was selected for its computational efficiency and effectiveness, especially when features are independent. It serves as a strong baseline in classification tasks with mixed feature types.</p>
+</section>
+<section id="application-steps-3" class="level3">
+<h3 class="anchored" data-anchor-id="application-steps-3">Application Steps:</h3>
+<ol type="1">
+<li><p>Train Naive Bayes classifier.</p>
+<div id="f47c2ce3" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>gnb <span class="op">=</span> GaussianNB()</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>gnb.fit(X_train, y_train)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>y_pred_nb <span class="op">=</span> gnb.predict(X_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p>Predict on the testing set.</p>
+<div id="8467ea0b" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Naive Bayes Accuracy: "</span>, accuracy_score(y_test, y_pred_nb))</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Naive Bayes Confusion Matrix: </span><span class="ch">\n</span><span class="st">"</span>, confusion_matrix(y_test, y_pred_nb))</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Naive Bayes Classification Report: </span><span class="ch">\n</span><span class="st">"</span>, classification_report(y_test, y_pred_nb))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Naive Bayes Accuracy:  0.8852459016393442
+Naive Bayes Confusion Matrix: 
+ [[25  4]
+ [ 3 29]]
+Naive Bayes Classification Report: 
+               precision    recall  f1-score   support
+
+         0.0       0.89      0.86      0.88        29
+         1.0       0.88      0.91      0.89        32
+
+    accuracy                           0.89        61
+   macro avg       0.89      0.88      0.88        61
+weighted avg       0.89      0.89      0.89        61
+</code></pre>
+</div>
+</div></li>
+</ol>
+</section>
+<section id="findings-and-interpretation-4" class="level3">
+<h3 class="anchored" data-anchor-id="findings-and-interpretation-4">Findings and Interpretation:</h3>
+<p>Naive Bayes outperformed KNN, achieving nearly 89% accuracy, with a balanced recall and precision. Its probabilistic assumptions provided robustness against irrelevant features and high dimensionality, through its independence assumption may not be entirely realistic for clinical data.</p>
+</section>
+</section>
+<section id="dimensionality-reduction-via-pca" class="level2">
+<h2 class="anchored" data-anchor-id="dimensionality-reduction-via-pca">Dimensionality Reduction via PCA</h2>
+<section id="algorithm-explanation-and-math-2" class="level3">
+<h3 class="anchored" data-anchor-id="algorithm-explanation-and-math-2">Algorithm Explanation and Math:</h3>
+<p>PCA is a linear dimensionality reduction technique that transforms the data to a new coordinate system where the greatest variance comes to lie on the first axis (principal component), the second greatest variance on the second axis etc.</p>
+<ul>
+<li><p>Computes the covariance matrix of the data</p></li>
+<li><p>Determines the eigenvectors (principal components) and eigenvalues (variance explained).</p></li>
+<li><p>Projects the data onto the top <span class="math inline">\(d\)</span> components:</p>
+<p><span class="math display">\[ Z = XW \]</span></p>
+<ul>
+<li>Where X is the standardised data, and <span class="math inline">\(W\)</span> contains the selected eigenvectors.</li>
+</ul></li>
+</ul>
+<p>PCA was used to explore the intrinsic structure of the dataset, reduce its dimensionality, and visualise class separability.</p>
+</section>
+<section id="application-steps-4" class="level3">
+<h3 class="anchored" data-anchor-id="application-steps-4">Application Steps:</h3>
+<ol type="1">
+<li><p>Standardise features prior to PCA.</p>
+<div id="eef39ba5" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>X_pca <span class="op">=</span> X.copy()</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>pca_scaler <span class="op">=</span> StandardScaler()</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>X_pca_scaled <span class="op">=</span> pca_scaler.fit_transform(X_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p>Apply PCA, choosing number of components based on explained variance.</p>
+<div id="c040aa01" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>pca <span class="op">=</span> PCA(n_components<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>principal_components <span class="op">=</span> pca.fit_transform(X_pca_scaled)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>explained_variance <span class="op">=</span> pca.explained_variance_ratio_</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"PCA Explained Variance 2 components: </span><span class="ch">\n</span><span class="st">"</span>, explained_variance)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Total Explained Variance: "</span>, explained_variance.<span class="bu">sum</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>PCA Explained Variance 2 components: 
+ [0.18983195 0.09319109]
+Total Explained Variance:  0.28302303537413753</code></pre>
+</div>
+</div></li>
+<li><p>Project data onto principal components.</p>
+<div id="175e857c" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>plt.scatter(principal_components[:, <span class="dv">0</span>], principal_components[:, <span class="dv">1</span>], c<span class="op">=</span>y, cmap<span class="op">=</span><span class="st">'RdYlGn_r'</span>, edgecolor<span class="op">=</span><span class="st">'k'</span>, s<span class="op">=</span><span class="dv">50</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'PCA of Heart Disease Dataset'</span>)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Principal Component 1'</span>)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Principal Component 2'</span>)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>plt.colorbar(label<span class="op">=</span><span class="st">'Heart Disease Presence'</span>)</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="heart_disease_files/figure-html/cell-22-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div></li>
+</ol>
+</section>
+<section id="findings-and-interpretation-5" class="level3">
+<h3 class="anchored" data-anchor-id="findings-and-interpretation-5">Findings and Interpretation:</h3>
+<p>The first two principal components explained only about 28% of the data’s variance, suggesting a complex underlying structure not easily captured linearly. While PCA provided initial insights and useful visualisations, nonlinear methods like t-SNE and UMAP may capture meaningful class separations.</p>
+</section>
+</section>
+<section id="non-linear-dimensionality-reduction" class="level2">
+<h2 class="anchored" data-anchor-id="non-linear-dimensionality-reduction">Non-Linear Dimensionality Reduction</h2>
+<section id="algorithm-explanation-and-math-3" class="level3">
+<h3 class="anchored" data-anchor-id="algorithm-explanation-and-math-3">Algorithm Explanation and Math:</h3>
+<p>t-SNE is a nonlinear algorithm for dimensionality reduction, particularly for data visualisation. It preserves local similarity by modeling high-dimensional data points as probabilities, then optimising their locations in lower dimensions to match these probabilities.</p>
+<ul>
+<li><p>Defines conditional probabilities in high dimension with Gaussian kernels:</p>
+<p><span class="math display">\[
+p_{j|i}= \frac{exp(-||x_i-x_j||^2/2 \theta_i^2)}{\sum_{k \neq i} exp(-||x_i-x_k||^2/2 \theta_i^2)}
+\]</span></p></li>
+<li><p>Joint probability symmetrisation:</p>
+<p><span class="math display">\[
+p_{ij}= \frac{p_{j|i} + p_{i|j}}{2N}
+\]</span></p></li>
+<li><p>Low dimensional similarity with Student’s t-distribution:</p>
+<p><span class="math display">\[
+q_{ij}= \frac{(1+||y_i-y_j||^2)^{-1}}{\sum_{k \neq l}(1+||y_k-y_l||^2)^{-1}}
+\]</span></p></li>
+<li><p>Kullback-Leibler divergence minimisation:</p>
+<p><span class="math display">\[
+KL(P||Q)= \sum_{i \neq j}p_{ij}~log \frac{p_{ij}}{q_{ij}}
+\]</span></p></li>
+</ul>
+<p>t-SNE was employed for its strength in revealing clusters and subtle relationships in high-dimensional medical data.</p>
+<p>UMAP is a more recent nonlinear reduction method that preserves local distances but also better preserves the global structure of data.</p>
+<ul>
+<li><p>Constructs a weighted k-nearest-neighbour graph in high-dimensional space.</p></li>
+<li><p>Optimises a low-dimensional graph to be as structurally similar as possible, using cross-entropy loss.</p></li>
+</ul>
+<p>UMAP was included alongside t-SNE to compare nonlinear embeddings.</p>
+</section>
+<section id="application-steps-5" class="level3">
+<h3 class="anchored" data-anchor-id="application-steps-5">Application Steps:</h3>
+<ol type="1">
+<li><p>Apply nonlinear techniques on standardised data.</p>
+<div id="c06d43ab" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>X_scaled <span class="op">=</span> X_pca_scaled</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>tsne <span class="op">=</span> TSNE(n_components<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">42</span>, perplexity<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>X_tsne <span class="op">=</span> tsne.fit_transform(X_scaled)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>umap_reducer <span class="op">=</span> umap.UMAP(n_components<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>X_umap <span class="op">=</span> umap_reducer.fit_transform(X_scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p>Visualise clusters of heart disease data.</p>
+<div id="dd2be15d" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span>X_tsne[:, <span class="dv">0</span>], y<span class="op">=</span>X_tsne[:, <span class="dv">1</span>], hue<span class="op">=</span>y, palette<span class="op">=</span><span class="st">'coolwarm'</span>, edgecolor<span class="op">=</span><span class="st">'k'</span>, s<span class="op">=</span><span class="dv">50</span>)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'t-SNE of Heart Disease Dataset'</span>)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'t-SNE Dimension 1'</span>)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'t-SNE Dimension 2'</span>)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>plt.legend(title<span class="op">=</span><span class="st">'Heart Disease Presence'</span>)</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span>X_umap[:, <span class="dv">0</span>], y<span class="op">=</span>X_umap[:, <span class="dv">1</span>], hue<span class="op">=</span>y, palette<span class="op">=</span><span class="st">'coolwarm'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'UMAP of Heart Disease Dataset'</span>)</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'UMAP Dimension 1'</span>)</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'UMAP Dimension 2'</span>)</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>plt.legend(title<span class="op">=</span><span class="st">'Heart Disease Presence'</span>)</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="heart_disease_files/figure-html/cell-24-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="heart_disease_files/figure-html/cell-24-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div></li>
+</ol>
+</section>
+<section id="findings-and-interpretation-6" class="level3">
+<h3 class="anchored" data-anchor-id="findings-and-interpretation-6">Findings and Interpretation:</h3>
+<p>t-SNE provided clearer separation of patient groups compared to PCA, highlighting local neighbourhoods and potential clusters corresponding to heart disease presence. This underlined the importance of capturing nonlinear feature interactions in clinical context. UMAP also revealed strong cluster compactness and separation for the disease and non-disease groups, adding confidence to the existence of meaningful nonlinear relationships missed by linear methods.</p>
+</section>
+</section>
+<section id="model-refinement-and-feature-selection" class="level2">
+<h2 class="anchored" data-anchor-id="model-refinement-and-feature-selection">Model Refinement and Feature Selection</h2>
+<section id="algorithm-explanation-and-math-4" class="level3">
+<h3 class="anchored" data-anchor-id="algorithm-explanation-and-math-4">Algorithm Explanation and Math:</h3>
+<p>Ensemble methods like the Voting Classifier aggregate several base models (KNN, Logistic Regression, SVM, Random Forest) to improve predictive accuracy and stability.</p>
+<ul>
+<li><p>For soft voting, class probabilities from each model are averaged, and the class with the highest average is selected:</p>
+<p><span class="math display">\[
+y=arg~ \mathop{max}_c (\frac{1}{M} \sum_{m=1}^M P_m(c))
+\]</span></p></li>
+</ul>
+<p>A soft voting ensemble was trained and evaluated.</p>
+</section>
+<section id="application-steps-6" class="level3">
+<h3 class="anchored" data-anchor-id="application-steps-6">Application Steps:</h3>
+<ol type="1">
+<li><p>Use feature importance rankings</p>
+<div id="de00e820" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>rf <span class="op">=</span> RandomForestClassifier(random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>rf.fit(X_train, y_train)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>importances <span class="op">=</span> rf.feature_importances_</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>feature_names <span class="op">=</span> X.columns</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>feat_imp_df <span class="op">=</span> pd.DataFrame({<span class="st">'Feature'</span>: feature_names, <span class="st">'Importance'</span>: importances}).sort_values(by<span class="op">=</span><span class="st">'Importance'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Feature Importances from Random Forest: </span><span class="ch">\n</span><span class="st">"</span>, feat_imp_df.head(<span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Feature Importances from Random Forest: 
+      Feature  Importance
+4    oldpeak    0.117267
+3    thalach    0.113217
+5         ca    0.111042
+0        age    0.096444
+9       cp_4    0.090751
+17  thal_7.0    0.084951
+2       chol    0.082588
+1   trestbps    0.077485</code></pre>
+</div>
+</div></li>
+<li><p>Run recursive feature elimination with cross-validation to identify minimal optimal feature subsets</p>
+<div id="37d67ccc" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>selector <span class="op">=</span> RFE(rf, n_features_to_select<span class="op">=</span><span class="dv">8</span>, step<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>selector.fit(X_train, y_train)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>selected_features <span class="op">=</span> X.columns[selector.support_]</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Selected Features: </span><span class="ch">\n</span><span class="st">"</span>, <span class="bu">list</span>(selected_features))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Selected Features: 
+ ['age', 'trestbps', 'chol', 'thalach', 'oldpeak', 'ca', 'cp_4', 'thal_7.0']</code></pre>
+</div>
+</div></li>
+<li><p>Retrain KNN and Naive Bayes models on reduced feature sets.</p>
+<div id="3b2b2adb" class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>X_train_sel <span class="op">=</span> X_train[selected_features]</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>X_test_sel <span class="op">=</span> X_test[selected_features]</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>knn_sel <span class="op">=</span> KNeighborsClassifier(n_neighbors<span class="op">=</span>best_k)</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>knn_sel.fit(X_train_sel, y_train)</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>y_pred_knn_sel <span class="op">=</span> knn_sel.predict(X_test_sel)</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KNN with Selected Features Accuracy: "</span>, accuracy_score(y_test, y_pred_knn_sel))</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KNN Classification Report with Selected Features: </span><span class="ch">\n</span><span class="st">"</span>, classification_report(y_test, y_pred_knn_sel))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>KNN with Selected Features Accuracy:  0.8524590163934426
+KNN Classification Report with Selected Features: 
+               precision    recall  f1-score   support
+
+         0.0       0.79      0.93      0.86        29
+         1.0       0.93      0.78      0.85        32
+
+    accuracy                           0.85        61
+   macro avg       0.86      0.86      0.85        61
+weighted avg       0.86      0.85      0.85        61
+</code></pre>
+</div>
+</div></li>
+</ol>
+<div id="6b89052f" class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>    gnb.fit(X_train_sel, y_train)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>    y_pred_nb <span class="op">=</span> gnb.predict(X_test_sel)</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Naive Bayes Accuracy: "</span>, accuracy_score(y_test, y_pred_nb))</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Naive Bayes Confusion Matrix: </span><span class="ch">\n</span><span class="st">"</span>, confusion_matrix(y_test, y_pred_nb))</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Naive Bayes Classification Report: </span><span class="ch">\n</span><span class="st">"</span>, classification_report(y_test, y_pred_nb))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Naive Bayes Accuracy:  0.8360655737704918
+Naive Bayes Confusion Matrix: 
+ [[24  5]
+ [ 5 27]]
+Naive Bayes Classification Report: 
+               precision    recall  f1-score   support
+
+         0.0       0.83      0.83      0.83        29
+         1.0       0.84      0.84      0.84        32
+
+    accuracy                           0.84        61
+   macro avg       0.84      0.84      0.84        61
+weighted avg       0.84      0.84      0.84        61
+</code></pre>
+</div>
+</div>
+</section>
+<section id="findings-and-interpretation-7" class="level3">
+<h3 class="anchored" data-anchor-id="findings-and-interpretation-7">Findings and Interpretation:</h3>
+<p>Feature importance analysis with Random Forest identified <span class="math inline">\(oldpeak\)</span>, <span class="math inline">\(thalach\)</span>, and <span class="math inline">\(ca\)</span> as top predictors, highlighting clinical variables influencing heart disease prediction. This ensemble achieved the highest test accuracy (almost 87%), showing that combining multiple algorithms leverages their indivduals strengths.</p>
+</section>
+</section>
+<section id="additional-models" class="level2">
+<h2 class="anchored" data-anchor-id="additional-models">Additional Models</h2>
+<section id="application-steps-7" class="level3">
+<h3 class="anchored" data-anchor-id="application-steps-7">Application Steps:</h3>
+<ol type="1">
+<li><p>Train models.</p>
+<div id="0dde0dcf" class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> LogisticRegression(max_iter<span class="op">=</span><span class="dv">1000</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>lr.fit(X_train_sel, y_train)</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>svc <span class="op">=</span> SVC(probability<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>svc.fit(X_train_sel, y_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="28">
+<style>#sk-container-id-1 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: #000;
+  --sklearn-color-text-muted: #666;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, white)));
+  --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-icon: #696969;
+
+  @media (prefers-color-scheme: dark) {
+    /* Redefinition of color scheme for dark theme */
+    --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, #111)));
+    --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-icon: #878787;
+  }
+}
+
+#sk-container-id-1 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-1 pre {
+  padding: 0;
+}
+
+#sk-container-id-1 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-1 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-1 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-1 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-1 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-1 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-1 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-1 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-1 label.sk-toggleable__label {
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.5em;
+}
+
+#sk-container-id-1 label.sk-toggleable__label .caption {
+  font-size: 0.6rem;
+  font-weight: lighter;
+  color: var(--sklearn-color-text-muted);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-1 div.sk-toggleable__content {
+  display: none;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label label.sk-toggleable__label,
+#sk-container-id-1 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-1 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-1 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 1.2em;
+}
+
+#sk-container-id-1 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-1 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-1 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 0.5em;
+  text-align: center;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-1);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-1 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-1 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+
+.estimator-table summary {
+    padding: .5rem;
+    font-family: monospace;
+    cursor: pointer;
+}
+
+.estimator-table details[open] {
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+    padding-bottom: 0.3rem;
+}
+
+.estimator-table .parameters-table {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.estimator-table .parameters-table tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+.estimator-table .parameters-table tr:nth-child(even) {
+    background-color: #f6f6f6;
+}
+
+.estimator-table .parameters-table tr:hover {
+    background-color: #e0e0e0;
+}
+
+.estimator-table table td {
+    border: 1px solid rgba(106, 105, 104, 0.232);
+}
+
+.user-set td {
+    color:rgb(255, 94, 0);
+    text-align: left;
+}
+
+.user-set td.value pre {
+    color:rgb(255, 94, 0) !important;
+    background-color: transparent !important;
+}
+
+.default td {
+    color: black;
+    text-align: left;
+}
+
+.user-set td i,
+.default td i {
+    color: black;
+}
+
+.copy-paste-icon {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48IS0tIUZvbnQgQXdlc29tZSBGcmVlIDYuNy4yIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlL2ZyZWUgQ29weXJpZ2h0IDIwMjUgRm9udGljb25zLCBJbmMuLS0+PHBhdGggZD0iTTIwOCAwTDMzMi4xIDBjMTIuNyAwIDI0LjkgNS4xIDMzLjkgMTQuMWw2Ny45IDY3LjljOSA5IDE0LjEgMjEuMiAxNC4xIDMzLjlMNDQ4IDMzNmMwIDI2LjUtMjEuNSA0OC00OCA0OGwtMTkyIDBjLTI2LjUgMC00OC0yMS41LTQ4LTQ4bDAtMjg4YzAtMjYuNSAyMS41LTQ4IDQ4LTQ4ek00OCAxMjhsODAgMCAwIDY0LTY0IDAgMCAyNTYgMTkyIDAgMC0zMiA2NCAwIDAgNDhjMCAyNi41LTIxLjUgNDgtNDggNDhMNDggNTEyYy0yNi41IDAtNDgtMjEuNS00OC00OEwwIDE3NmMwLTI2LjUgMjEuNS00OCA0OC00OHoiLz48L3N2Zz4=);
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+    background-position: 0;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>SVC(probability=True, random_state=42)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SVC</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.7/modules/generated/sklearn.svm.SVC.html">?<span>Documentation for SVC</span></a><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param">C&nbsp;</td>
+<td class="value">1.0</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param">kernel&nbsp;</td>
+<td class="value">'rbf'</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param">degree&nbsp;</td>
+<td class="value">3</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param">gamma&nbsp;</td>
+<td class="value">'scale'</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param">coef0&nbsp;</td>
+<td class="value">0.0</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param">shrinking&nbsp;</td>
+<td class="value">True</td>
+</tr>
+<tr class="user-set odd">
+<td><em></em></td>
+<td class="param">probability&nbsp;</td>
+<td class="value">True</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param">tol&nbsp;</td>
+<td class="value">0.001</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param">cache_size&nbsp;</td>
+<td class="value">200</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param">class_weight&nbsp;</td>
+<td class="value">None</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param">verbose&nbsp;</td>
+<td class="value">False</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param">max_iter&nbsp;</td>
+<td class="value">-1</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param">decision_function_shape&nbsp;</td>
+<td class="value">'ovr'</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param">break_ties&nbsp;</td>
+<td class="value">False</td>
+</tr>
+<tr class="user-set odd">
+<td><em></em></td>
+<td class="param">random_state&nbsp;</td>
+<td class="value">42</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    </div></div></div></div></div><script>function copyToClipboard(text, element) {
+    // Get the parameter prefix from the closest toggleable content
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const fullParamName = paramPrefix ? `${paramPrefix}${text}` : text;
+
+    const originalStyle = element.style;
+    const computedStyle = window.getComputedStyle(element);
+    const originalWidth = computedStyle.width;
+    const originalHTML = element.innerHTML.replace('Copied!', '');
+
+    navigator.clipboard.writeText(fullParamName)
+        .then(() => {
+            element.style.width = originalWidth;
+            element.style.color = 'green';
+            element.innerHTML = "Copied!";
+
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Failed to copy:', err);
+            element.style.color = 'red';
+            element.innerHTML = "Failed!";
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        });
+    return false;
+}
+
+document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const paramName = element.parentElement.nextElementSibling.textContent.trim();
+    const fullParamName = paramPrefix ? `${paramPrefix}${paramName}` : paramName;
+
+    element.setAttribute('title', fullParamName);
+});
+</script>
+</div>
+</div></li>
+<li><p>Consider ensemble methods combining predictors.</p>
+<div id="1640a0bc" class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>ensemble <span class="op">=</span> VotingClassifier(estimators<span class="op">=</span>[</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'knn'</span>, knn_final),</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'gnb'</span>, gnb),</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'lr'</span>, lr),</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'svc'</span>, svc),</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'rf'</span>, rf)</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>], voting<span class="op">=</span><span class="st">'soft'</span>)</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>ensemble.fit(X_train_sel, y_train)</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>y_pred_ensemble <span class="op">=</span> ensemble.predict(X_test_sel)</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Ensemble Model Accuracy: "</span>, accuracy_score(y_test, y_pred_ensemble))</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Ensemble Model Classification Report: </span><span class="ch">\n</span><span class="st">"</span>, classification_report(y_test, y_pred_ensemble))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Ensemble Model Accuracy:  0.8524590163934426
+Ensemble Model Classification Report: 
+               precision    recall  f1-score   support
+
+         0.0       0.86      0.83      0.84        29
+         1.0       0.85      0.88      0.86        32
+
+    accuracy                           0.85        61
+   macro avg       0.85      0.85      0.85        61
+weighted avg       0.85      0.85      0.85        61
+</code></pre>
+</div>
+</div></li>
+</ol>
+</section>
+<section id="findings-and-interpretation-8" class="level3">
+<h3 class="anchored" data-anchor-id="findings-and-interpretation-8">Findings and Interpretation:</h3>
+<p>Testing Logistic regression and Support Vector Machines alongside KNN and Random Forest allowed broader model comparison. Implementing an ensemble voting classifier to aggregate predictions gave a model with 84% accuracy. The ensemble approach leverages the strengths of individual models, enhancing generalisability and stability in clinical prediction. This step is important given the heterogeneity in patient data.</p>
+</section>
+</section>
+<section id="clinical-relevance" class="level2">
+<h2 class="anchored" data-anchor-id="clinical-relevance">Clinical Relevance</h2>
+<section id="application-steps-8" class="level3">
+<h3 class="anchored" data-anchor-id="application-steps-8">Application Steps:</h3>
+<ol type="1">
+<li><p>Adjust classification thresholds to balance sensitivity vs specificity based on clinical context.</p>
+<div id="e2821882" class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>y_probs <span class="op">=</span> ensemble.predict_proba(X_test_sel)[:, <span class="dv">1</span>]</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>fpr, tpr, thresholds_roc <span class="op">=</span> roc_curve(y_test, y_probs)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>roc_auc <span class="op">=</span> auc(fpr, tpr)</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>plt.plot(fpr, tpr, label<span class="op">=</span><span class="ss">f'ROC curve (area = </span><span class="sc">{</span>roc_auc<span class="sc">:.2f}</span><span class="ss">)'</span>)</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>plt.plot([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">1</span>], <span class="st">'k--'</span>)</span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'False Positive Rate'</span>)</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'True Positive Rate'</span>)</span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"ROC Curve - Ensemble Classifier"</span>)</span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'lower right'</span>)</span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="heart_disease_files/figure-html/cell-31-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div></li>
+<li><p>Use Precision-Recall and ROC curves to select thresholds minimising false negatives</p>
+<div id="fae23cfd" class="cell" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>precision, recall, thresholds_pr <span class="op">=</span> precision_recall_curve(y_test, y_probs)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>pr_auc <span class="op">=</span> auc(recall, precision)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>plt.plot(recall, precision, label<span class="op">=</span><span class="ss">f'Precision-Recall curve (area = </span><span class="sc">{</span>pr_auc<span class="sc">:.2f}</span><span class="ss">)'</span>)</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Recall'</span>)</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Precision'</span>)</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Precision-Recall Curve - Ensemble Classifier"</span>)</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'lower left'</span>)</span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="heart_disease_files/figure-html/cell-32-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div></li>
+</ol>
+</section>
+<section id="findings-and-interpretation-9" class="level3">
+<h3 class="anchored" data-anchor-id="findings-and-interpretation-9">Findings and Interpretation:</h3>
+<p>Classification threshold tuning using ROC and Precision-Recall analyses aligned evaluation metrics with practical clinical priorities. Adjusting threshold to minimise false negative is important in heart disease diagnosis to reduce missed cases, even if at some cost of increased false positives. The ROC AUC and PR AUC scores indicated strong model discriminatory power. This improves model usages in real-world settings by accommodating different risk tolerances.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>This demonstrates the effectiveness of machine learning techniques for predicting heart disease using the Cleveland dataset. After preprocessing and imputation, models such as K-Nearest Neighbours and Naive Bayes provided baseline results, with Naive Bayes outperforming KNN in accuracy. Dimensionality reduction using PCA revealed the complexity of the dataset’s feature space, which was better captured by nonlinear methods such as t-SNE and UMAP, highlighting the importance of nonlinear relationships in cardiovascular risk factors.</p>
+<p>Feature selection based on Random Forest importance and recursive elimination refined the model inputs, improving the accuracy and interpretability of the classifiers. The ensemble modeling approach further enhanced predictive performance. Threshold tuning by ROC and Precision-Recall analyses aligned the models with practical clinical needs, minimising false negatives in medical diagnosis.</p>
+<p>Overall, this efficiently identifies patients with heart disease with ~85% accuracy.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References:</h2>
+<p>James, G., Witten, D., Hastie, T., Tibshirani, R., &amp; Taylor, J. (2023). <em>An Introduction to Statistical Learning</em>. Springer Nature. <a href="https://www.statlearning.com/" class="uri">https://www.statlearning.com/</a></p>
+<p>‌Janosi, A., Steinbrunn, W., Pfisterer, M., &amp; Detrano, R. (1989). Heart Disease [Dataset]. UCI Machine Learning Repository. <a href="https://doi.org/10.24432/C52P4X." class="uri">https://doi.org/10.24432/C52P4X.</a></p>
+<p><a href="https://archive.ics.uci.edu/dataset/45/heart+disease" class="uri">https://archive.ics.uci.edu/dataset/45/heart+disease</a></p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
